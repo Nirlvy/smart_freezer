@@ -25,7 +25,7 @@
 
     <el-container>
       <el-container>
-        <el-aside width="auto">
+        <el-aside>
           <el-scrollbar style="height: auto">
             <el-menu background-color="#334058" text-color="#B5C0D0" unique-opened :collapse="isCollapse">
               <el-sub-menu index="1">
@@ -105,7 +105,7 @@ import {
   Setting,
   Fold,
   Files,
-DataAnalysis,
+  DataAnalysis,
 } from "@element-plus/icons-vue";
 
 const item = {
@@ -135,6 +135,7 @@ function toggleCollapse() {
 .layout-container .el-aside {
   color: var(--el-text-color-primary);
   background: #334058;
+  width: auto;
 }
 
 .layout-container .el-menu {
