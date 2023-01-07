@@ -13,4 +13,7 @@ const app = createApp(App);
 app.use(ElementPlus, { locale: zhCn });
 app.config.globalProperties.$axios = axios;
 
+import { router } from "./router/index.js"
+app.use(router)
+
 app.mount("#app");

@@ -1,0 +1,47 @@
+<template>
+  <el-container class="layout-container">
+    <el-header>
+      <Header />
+    </el-header>
+
+    <el-container>
+      <el-container>
+        <el-aside>
+          <Aside />
+        </el-aside>
+      </el-container>
+
+      <el-container>
+        <el-main>
+          <RouterView />
+        </el-main>
+      </el-container>
+    </el-container>
+  </el-container>
+</template>
+
+<script lang="ts" setup>
+import Aside from "../components/Aside.vue";
+import Header from "../components/Header.vue";
+</script>
+
+<style scoped>
+.layout-container .el-header {
+  position: relative;
+  background-color: #263146;
+  color: white;
+  padding: 0;
+  margin: 0;
+  font-size: 14px;
+}
+
+.layout-container .el-aside {
+  color: var(--el-text-color-primary);
+  background: #334058;
+  width: auto;
+}
+
+.layout-container .el-main {
+  padding: 0;
+}
+</style>
