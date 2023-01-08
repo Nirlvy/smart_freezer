@@ -1,19 +1,17 @@
-import { createApp } from "vue";
-import App from "./App.vue";
+import { createApp } from "vue"
+import App from "./App.vue"
 
-import ElementPlus from "element-plus";
-import "element-plus/dist/index.css";
-import zhCn from "element-plus/dist/locale/zh-cn.mjs";
+import ElementPlus from "element-plus"
+import "element-plus/dist/index.css"
+import zhCn from "element-plus/dist/locale/zh-cn.mjs"
 
-import "./assets/main.css";
-import axios from "axios";
-
-const app = createApp(App);
-
-app.use(ElementPlus, { locale: zhCn });
-app.config.globalProperties.$axios = axios;
+import "./assets/main.css"
+import axios from "axios"
 
 import { router } from "./router/index.js"
-app.use(router)
 
-app.mount("#app");
+const app = createApp(App)
+
+app.config.globalProperties.$axios = axios
+
+app.use(router).use(ElementPlus, { locale: zhCn }).mount("#app")

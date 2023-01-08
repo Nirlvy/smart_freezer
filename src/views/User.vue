@@ -197,7 +197,7 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref, watch } from "vue";
+import { reactive, ref, watch } from "vue"
 import {
   Search,
   Edit,
@@ -209,48 +209,48 @@ import {
   InfoFilled,
   ShoppingCartFull,
   ShoppingCart,
-} from "@element-plus/icons-vue";
-import { ElMessage } from "element-plus";
-import request from "../utils/request";
+} from "@element-plus/icons-vue"
+import { ElMessage } from "element-plus"
+import request from "../utils/request"
 
-interface User {
-  id: Int32Array;
-  userName: string;
-  createTime: string;
-  shelves: Int32Array;
-  sold: Int32Array;
+interface Userinfor {
+  id: Int32Array
+  userName: string
+  createTime: string
+  shelves: Int32Array
+  sold: Int32Array
 }
 
 interface ServerResponse {
-  data: ServerData;
+  data: ServerData
 }
 
 interface ServerData {
-  records: string;
-  total: number;
+  records: string
+  total: number
 }
 
-const tableData = ref();
-const input_id = ref("");
-const input_userName = ref("");
-const input_date = ref([]);
-watch(input_date, (nv, _ov) => {
-  if (nv == null) input_date.value = [];
-});
-const input_shelves = ref("");
-const input_sold = ref("");
-const total = ref(0);
-const currentPage = ref(1);
-const pageSize = ref(10);
-const new_dialog = ref(false);
-const edit_dialog = ref(false);
-const multipleSelection = ref<User[]>([]);
+const tableData = ref()
+const input_id = ref("")
+const input_userName = ref("")
+const input_date = ref([])
+watch(input_date, (nv) => {
+  if (nv == null) input_date.value = []
+})
+const input_shelves = ref("")
+const input_sold = ref("")
+const total = ref(0)
+const currentPage = ref(1)
+const pageSize = ref(10)
+const new_dialog = ref(false)
+const edit_dialog = ref(false)
+const multipleSelection = ref<Userinfor[]>([])
 
 const register_form = reactive({
   userName: "",
   password: "",
   comfirmPassword: "",
-});
+})
 
 const edit_form = reactive({
   id: "",
@@ -258,16 +258,16 @@ const edit_form = reactive({
   createTime: "",
   shelves: "",
   sold: "",
-});
+})
 
 const clear = () => {
   Object.keys(register_form).map((key) => {
-    delete register_form[key];
-  });
+    delete register_form[key]
+  })
   Object.keys(edit_form).map((key) => {
-    delete edit_form[key];
-  });
-};
+    delete edit_form[key]
+  })
+}
 
 const load = () => {
   request
@@ -288,12 +288,12 @@ const load = () => {
         input_sold.value
     )
     .then(function (res) {
-      tableData.value = res.records;
-      total.value = res.total;
-    });
-};
+      tableData.value = res.records
+      total.value = res.total
+    })
+}
 
-load();
+load()
 
 const new_crofirm = () => {
   if (
@@ -309,26 +309,26 @@ const new_crofirm = () => {
           ElMessage({
             message: "注册成功！",
             type: "success",
-          });
-          new_dialog.value = false;
-          currentPage.value = Math.ceil((total.value + 1) / pageSize.value);
-          load();
-          clear();
+          })
+          new_dialog.value = false
+          currentPage.value = Math.ceil((total.value + 1) / pageSize.value)
+          load()
+          clear()
         }
       }
-    });
+    })
   } else {
     ElMessage({
       message: "你输入的用户名密码不符合规范或者两次输入密码不同！",
       type: "error",
-    });
+    })
   }
-};
+}
 
 const handleEdit = (row: string) => {
-  Object.assign(edit_form, row);
-  edit_dialog.value = true;
-};
+  Object.assign(edit_form, row)
+  edit_dialog.value = true
+}
 
 const edit_corfirm = () => {
   if (
@@ -349,51 +349,51 @@ const edit_corfirm = () => {
           ElMessage({
             message: "修改成功！",
             type: "success",
-          });
-          edit_dialog.value = false;
-          input_id.value = edit_form.id;
-          load();
-          clear();
+          })
+          edit_dialog.value = false
+          input_id.value = edit_form.id
+          load()
+          clear()
         }
       }
-    });
+    })
   } else {
     ElMessage({
       message: "输入不符合要求，请检查！",
       type: "error",
-    });
+    })
   }
-};
+}
 
 const handleDelete = (row: string) => {
-  Object.assign(edit_form, row);
+  Object.assign(edit_form, row)
   request.delete("/user/" + edit_form.id).then((res) => {
     if (res) {
       ElMessage({
         message: "删除成功！",
         type: "success",
-      });
-      load();
+      })
+      load()
     }
-  });
-};
+  })
+}
 
-const selection = (val: User[]) => {
-  multipleSelection.value = val;
-};
+const selection = (val: Userinfor[]) => {
+  multipleSelection.value = val
+}
 
 const batchDelete = () => {
-  let ids = multipleSelection.value.map((v) => v.id);
+  let ids = multipleSelection.value.map((v) => v.id)
   request.delete("/user/del/batch", { data: ids }).then((res) => {
     if (res) {
       ElMessage({
         message: "删除成功！",
         type: "success",
-      });
-      load();
+      })
+      load()
     }
-  });
-};
+  })
+}
 </script>
 
 <style scoped></style>

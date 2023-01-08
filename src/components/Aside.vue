@@ -6,6 +6,7 @@
       unique-opened
       :collapse="isCollapse"
       router
+      :default-active="curPath"
     >
       <el-sub-menu index="1">
         <template #title>
@@ -60,7 +61,7 @@
           <el-icon>
             <DataAnalysis />
           </el-icon>
-          人员记录
+          用户记录
         </el-menu-item>
       </el-sub-menu>
     </el-menu>
@@ -77,7 +78,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
+import { ref } from "vue"
 import {
   Menu as House,
   Refrigerator,
@@ -88,18 +89,26 @@ import {
   Fold,
   Files,
   DataAnalysis,
-} from "@element-plus/icons-vue";
+} from "@element-plus/icons-vue"
+import { onBeforeRouteUpdate, useRoute, useRouter } from "vue-router"
 
-const isCollapse = ref(false);
+const isCollapse = ref(false)
+const route = useRoute()
+const router = useRouter()
+const curPath = ref(route.fullPath)
+const menuList = ref(router.options.routes[0].children)
 
 const toggleCollapse = () => {
-  isCollapse.value = !isCollapse.value;
-};
+  isCollapse.value = !isCollapse.value
+  console.log(menuList)
+}
+onBeforeRouteUpdate((to) => {
+  curPath.value = to.path
+})
 </script>
 
 <style scoped>
 .layout-container .el-menu {
   border-right: none;
 }
-
 </style>

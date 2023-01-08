@@ -21,8 +21,8 @@
 </template>
 
 <script lang="ts" setup>
-import Aside from "../components/Aside.vue";
-import Header from "../components/Header.vue";
+import Aside from "../components/Aside.vue"
+import Header from "../components/Header.vue"
 </script>
 
 <style scoped>

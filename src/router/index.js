@@ -10,12 +10,11 @@ export const router = createRouter({
       children: [
         {
           path: "user",
-          meta: { label: "用户" },
+          name: "用户记录",
           component: () => import("../views/User.vue"),
         },
         {
           path: "home",
-          meta: { label: "首页" },
           component: () => import("../views/Home.vue"),
         },
       ],

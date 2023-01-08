@@ -4,10 +4,13 @@
       <span style="font-size: large">智能冰柜管理系统</span>
       <el-breadcrumb
         style="display: inline-block; margin-left: 20px; font-size: 16px"
-        ><el-breadcrumb-item class="breadcrumb a" :to="paths.path">{{
-          paths.meta.label
-        }}</el-breadcrumb-item
-        ><el-breadcrumb-item>用户信息</el-breadcrumb-item></el-breadcrumb
+        ><el-breadcrumb-item class="breadcrumb" :to="{ path: '/' }"
+          >首页</el-breadcrumb-item
+        ><template v-for="(item, index) in breadList"
+          ><el-breadcrumb-item v-if="item.name" :key="index" :to="item.path">{{
+            item.name
+          }}</el-breadcrumb-item></template
+        ></el-breadcrumb
       >
     </div>
     <div>
@@ -29,14 +32,14 @@
 </template>
 
 <script lang="ts" setup>
-import { Setting } from "@element-plus/icons-vue";
-import { ref } from "vue";
-import { useRouter } from "vue-router";
-const paths = ref(useRouter().currentRoute.value);
-const log = () => {
-  console.log(useRouter().currentRoute.value);
-};
-log();
+import { Setting } from "@element-plus/icons-vue"
+import { ref, watch } from "vue"
+import { useRoute } from "vue-router"
+const route = useRoute()
+const breadList = ref(route.matched)
+watch(route, () => {
+  breadList.value = route.matched
+})
 </script>
 
 <style scoped>
@@ -47,13 +50,13 @@ log();
   height: 100%;
 }
 
-.breadcrumb >>> .el-breadcrumb__inner {
+.breadcrumb :deep() .el-breadcrumb__inner {
   color: white;
   font-weight: 400;
   /* color: var(--el-text-color-primary); */
 }
 
-.a:hover >>> .el-breadcrumb__inner {
+.breadcrumb:hover :deep() .el-breadcrumb__inner {
   color: #388ae6;
 }
 </style>
