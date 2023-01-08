@@ -63,8 +63,23 @@
         <el-button type="danger" :icon="DocumentDelete">批量删除</el-button>
       </template>
     </el-popconfirm>
-    <el-button type="primary" :icon="FolderAdd">导入</el-button>
-    <el-button type="primary" :icon="DocumentCopy">导出</el-button>
+    <el-upload
+      class="ml-10"
+      action="http://localhost:8080/user/import"
+      :on-success="handleUpSuccess"
+      :on-error="handleUpError"
+      :limit="1"
+      :on-exceed="handleExceed"
+      accept=".xlsx"
+      :show-file-list="false"
+      style="display: inline-flex; top: 3px"
+    >
+      <!-- TODO:修改为服务器地址 -->
+      <el-button type="primary" :icon="FolderAdd">导入</el-button>
+    </el-upload>
+    <el-button type="primary" class="ml-10" :icon="DocumentCopy" @click="exp()"
+      >导出</el-button
+    >
   </div>
   <el-dialog v-model="new_dialog" title="新增用户">
     <el-form :model="register_form">
@@ -210,7 +225,8 @@ import {
   ShoppingCartFull,
   ShoppingCart,
 } from "@element-plus/icons-vue"
-import { ElMessage } from "element-plus"
+import { ElMessage, genFileId } from "element-plus"
+import type { UploadInstance, UploadProps, UploadRawFile } from "element-plus"
 import request from "../utils/request"
 
 interface Userinfor {
@@ -245,6 +261,8 @@ const pageSize = ref(10)
 const new_dialog = ref(false)
 const edit_dialog = ref(false)
 const multipleSelection = ref<Userinfor[]>([])
+//FIXME:也许可以简化
+const upload = ref<UploadInstance>()
 
 const register_form = reactive({
   userName: "",
@@ -287,7 +305,7 @@ const load = () => {
         "&sold=" +
         input_sold.value
     )
-    .then(function (res) {
+    .then((res) => {
       tableData.value = res.records
       total.value = res.total
     })
@@ -393,6 +411,27 @@ const batchDelete = () => {
       load()
     }
   })
+}
+
+const exp = () => {
+  window.open("http://localhost:8080/user/export")
+  //TODO:地址应改为服务器地址
+}
+
+const handleUpSuccess = () => {
+  ElMessage.success("上传成功")
+  load()
+}
+
+const handleUpError = () => {
+  ElMessage.error("上传失败，请稍后再试")
+}
+
+const handleExceed: UploadProps["onExceed"] = (files) => {
+  upload.value!.clearFiles()
+  const file = files[0] as UploadRawFile
+  file.uid = genFileId()
+  upload.value!.handleStart(file)
 }
 </script>
 

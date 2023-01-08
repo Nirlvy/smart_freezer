@@ -80,7 +80,7 @@
 <script lang="ts" setup>
 import { ref } from "vue"
 import {
-  Menu as House,
+  House,
   Refrigerator,
   Present,
   Box,
