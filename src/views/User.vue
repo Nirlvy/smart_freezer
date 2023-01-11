@@ -291,7 +291,6 @@ const pageSize = ref(10)
 const new_dialog = ref(false)
 const edit_dialog = ref(false)
 const multipleSelection = ref<Userinfor[]>([])
-//FIXME:也许可以简化
 const upload = ref<UploadInstance>()
 const server = (inject("variable") as { server: string }).server
 const server_url = server + "/user/import"
