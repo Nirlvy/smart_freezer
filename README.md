@@ -1,22 +1,6 @@
 # smart_freezer
 
-This template should help get you started developing with Vue 3 in Vite.
-
-## Recommended IDE Setup
-
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
+## dev
 
 ```sh
 npm run dev
@@ -33,3 +17,6 @@ npm run build
 ```sh
 npm run lint
 ```
+
+## Tip:
+在部署到生产环境编译前，修改smart_freezer/src/assets/globalvariable.js的server为服务器地址以及smart_freezer/src/utils/request.js地址

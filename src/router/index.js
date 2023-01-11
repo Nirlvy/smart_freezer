@@ -5,7 +5,7 @@ export const router = createRouter({
   routes: [
     {
       path: "/",
-      redirect: "/home",
+      redirect: "/login",
       component: () => import("../views/Manage.vue"),
       children: [
         {
@@ -17,11 +17,20 @@ export const router = createRouter({
           path: "home",
           component: () => import("../views/Home.vue"),
         },
+        {
+          path: "person",
+          name: "个人信息",
+          component: () => import("../views/Person.vue"),
+        },
       ],
     },
     {
       path: "/login",
       component: () => import("../views/Login.vue"),
+    },
+    {
+      path: "/register",
+      component: () => import("../views/Register.vue"),
     },
   ],
 })

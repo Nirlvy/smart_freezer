@@ -8,18 +8,20 @@
       @mouseleave="blur = false"
     >
       <div style="margin: 20px 0; text-align: center; font-size: 24px">
-        <b>智能冰柜管理系统</b>
+        <b>注册</b>
       </div>
-      <el-form :model="user" :rules="rules" ref="ruleFormRef">
+      <el-form :model="user" :rules="rules" ref="ruleFormRef" status-icon>
         <el-form-item prop="userName">
           <el-input
             size="large"
             style="margin: 10px 0"
             :prefix-icon="UserFilled"
             v-model="user.userName"
-            placeholder="用户名"
-            autocomplete
+            placeholder="请输入1-20个字符作为你的用户名"
             clearable
+            minlength="1"
+            maxlength="20"
+            show-word-limit
           />
         </el-form-item>
         <el-form-item prop="password">
@@ -29,9 +31,23 @@
             :prefix-icon="Lock"
             show-password
             v-model="user.password"
-            placeholder="密码"
-            autocomplete
+            placeholder="请输入6-30个字符作为你的密码"
             clearable
+            minlength="6"
+            maxlength="30"
+          />
+        </el-form-item>
+        <el-form-item prop="confirm_password">
+          <el-input
+            size="large"
+            style="margin: 10px 0"
+            :prefix-icon="Lock"
+            show-password
+            v-model="user.confirm_password"
+            placeholder="请重复输入一次你的密码"
+            clearable
+            minlength="6"
+            maxlength="30"
           />
         </el-form-item>
         <el-form-item class="el-form-button">
@@ -39,17 +55,17 @@
             type="primary"
             size="large"
             round
-            @click="login(ruleFormRef)"
+            @click="register(ruleFormRef)"
           >
-            登录
+            注册
           </el-button>
           <el-button
             type="success"
             size="large"
             round
-            @click="router.push('/register')"
+            @click="router.push('/login')"
           >
-            注册
+            返回
           </el-button>
         </el-form-item>
       </el-form>
@@ -77,35 +93,63 @@ interface ServerData {
 const user = reactive({
   userName: "",
   password: "",
+  confirm_password: "",
 })
 const blur = ref(false)
 const router = useRouter()
+
+const ruleFormRef = ref<FormInstance>()
+
+const validatePass = (rule: any, value: any, callback: any) => {
+  if (value === "") {
+    callback(new Error("请输入密码！"))
+  } else {
+    if (user.confirm_password !== "") {
+      if (!ruleFormRef.value) return
+      ruleFormRef.value.validateField("checkPass", () => null)
+    }
+    callback()
+  }
+}
+const validatePass2 = (rule: any, value: any, callback: any) => {
+  if (value === "") {
+    callback(new Error("请再次输入密码！"))
+  } else if (value !== user.password) {
+    callback(new Error("两次输入不一致！"))
+  } else {
+    callback()
+  }
+}
+
 const rules = reactive<FormRules>({
   userName: [
     { required: true, message: "请输入用户名", trigger: "blur" },
     { min: 1, max: 20, message: "长度应该为1到20位", trigger: "blur" },
   ],
   password: [
-    { required: true, message: "请输入密码", trigger: "blur" },
     { min: 6, max: 30, message: "长度应该为6到30位", trigger: "blur" },
+    { validator: validatePass, trigger: "blur" },
+  ],
+  confirm_password: [
+    { min: 6, max: 30, message: "长度应该为6到30位", trigger: "blur" },
+    { validator: validatePass2, trigger: "blur" },
   ],
 })
-const ruleFormRef = ref<FormInstance>()
 
-const login = async (formEl: FormInstance | undefined) => {
+const register = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
   await formEl.validate((valid) => {
     if (valid) {
       request
-        .post<ServerResponse, ServerData>("/user/login", user)
+        .post<ServerResponse, ServerData>("/user/register", user)
         .then((res) => {
           if (res.code === "200") {
-            localStorage.setItem("user", JSON.stringify(res.data))
-            router.push("/home")
             ElMessage({
-              message: "登录成功",
+              message: "注册成功",
               type: "success",
             })
+            localStorage.setItem("user", JSON.stringify(res.data))
+            router.push("/home")
           } else {
             ElMessage({
               message: res.msg,
@@ -147,7 +191,7 @@ const login = async (formEl: FormInstance | undefined) => {
   margin: 200px auto;
   background-color: #fff;
   width: 350px;
-  height: 310px;
+  height: 400px;
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);

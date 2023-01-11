@@ -11,7 +11,7 @@
         </el-aside>
       </el-container>
 
-      <el-container>
+      <el-container style="width: 100%">
         <el-main>
           <RouterView />
         </el-main>
@@ -26,6 +26,11 @@ import Header from "../components/Header.vue"
 </script>
 
 <style scoped>
+.layout-container {
+  display: flex;
+  align-items: stretch;
+}
+
 .layout-container .el-header {
   position: relative;
   background-color: #263146;
@@ -39,9 +44,12 @@ import Header from "../components/Header.vue"
   color: var(--el-text-color-primary);
   background: #334058;
   width: auto;
+  flex-basis: 0;
+  flex-grow: 1;
 }
 
 .layout-container .el-main {
+  margin: 0;
   padding: 0;
 }
 </style>

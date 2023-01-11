@@ -4,7 +4,7 @@
       <span style="font-size: large">智能冰柜管理系统</span>
       <el-breadcrumb
         style="display: inline-block; margin-left: 20px; font-size: 16px"
-        ><el-breadcrumb-item class="breadcrumb" :to="{ path: '/' }"
+        ><el-breadcrumb-item class="breadcrumb" :to="{ path: '/home' }"
           >首页</el-breadcrumb-item
         ><template v-for="(item, index) in breadList"
           ><el-breadcrumb-item v-if="item.name" :key="index" :to="item.path">{{
@@ -21,25 +21,44 @@
 
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item>个人中心</el-dropdown-item>
-            <el-dropdown-item>退出登录</el-dropdown-item>
+            <router-link to="/person" style="text-decoration: none"
+              ><el-dropdown-item>个人中心</el-dropdown-item></router-link
+            >
+            <span @click="logout">
+              <el-dropdown-item>退出登录</el-dropdown-item></span
+            >
           </el-dropdown-menu>
         </template>
       </el-dropdown>
-      <span style="margin-right: 20px">admin</span>
+      <span style="margin-right: 20px">{{ user.userName }}</span>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { Setting } from "@element-plus/icons-vue"
+import { ElMessage } from "element-plus"
 import { ref, watch } from "vue"
-import { useRoute } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
+
 const route = useRoute()
+const router = useRouter()
 const breadList = ref(route.matched)
 watch(route, () => {
   breadList.value = route.matched
 })
+const user = localStorage.getItem("user")
+  ? JSON.parse(localStorage.getItem("user") || "0")
+  : {}
+
+const logout = () => {
+  router.push("/login")
+  localStorage.removeItem("user")
+  ElMessage({
+    message: "退出成功",
+    type: "success",
+  })
+}
 </script>
 
 <style scoped>

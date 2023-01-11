@@ -65,7 +65,7 @@
     </el-popconfirm>
     <el-upload
       class="ml-10"
-      action="http://localhost:8080/user/import"
+      v-model:action="server_url"
       :on-success="handleUpSuccess"
       :on-error="handleUpError"
       :limit="1"
@@ -74,18 +74,25 @@
       :show-file-list="false"
       style="display: inline-flex; top: 3px"
     >
-      <!-- TODO:修改为服务器地址 -->
       <el-button type="primary" :icon="FolderAdd">导入</el-button>
     </el-upload>
     <el-button type="primary" class="ml-10" :icon="DocumentCopy" @click="exp()"
       >导出</el-button
     >
   </div>
+
   <el-dialog v-model="new_dialog" title="新增用户">
-    <el-form :model="register_form">
-      <el-form-item label="用户名" :label-width="70">
+    <el-form
+      :model="register_form"
+      :rules="register_rules"
+      ref="ruleFormRef"
+      status-icon
+      hide-required-asterisk
+    >
+      <el-form-item label="用户名" :label-width="70" prop="userName">
         <el-input
           v-model="register_form.userName"
+          :prefix-icon="UserFilled"
           placeholder="请输入1-20个字符作为你的用户名"
           clearable
           minlength="1"
@@ -93,9 +100,10 @@
           show-word-limit
         />
       </el-form-item>
-      <el-form-item label="密码" :label-width="70">
+      <el-form-item label="密码" :label-width="70" prop="password">
         <el-input
           v-model="register_form.password"
+          :prefix-icon="Lock"
           placeholder="请输入6-30个字符作为你的密码"
           clearable
           show-password
@@ -103,9 +111,10 @@
           maxlength="30"
         />
       </el-form-item>
-      <el-form-item label="确认密码" :label-width="70">
+      <el-form-item label="确认密码" :label-width="70" prop="confirmPassword">
         <el-input
-          v-model="register_form.comfirmPassword"
+          v-model="register_form.confirmPassword"
+          :prefix-icon="Lock"
           placeholder="请重复输入一次你的密码"
           clearable
           show-password
@@ -117,7 +126,9 @@
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="new_dialog = false">取消</el-button>
-        <el-button type="primary" @click="new_crofirm"> 确定 </el-button>
+        <el-button type="primary" @click="new_crofirm(ruleFormRef)">
+          确定
+        </el-button>
       </span>
     </template>
   </el-dialog>
@@ -153,11 +164,18 @@
       </template>
     </el-table-column>
   </el-table>
-  <el-dialog v-model="edit_dialog" title="用户信息修改">
-    <el-form :model="edit_form">
-      <el-form-item label="用户名" :label-width="70">
+
+  <el-dialog v-model="edit_dialog" title="用户信息修改" width="25%">
+    <el-form
+      :model="edit_form"
+      ref="ruleFormRef"
+      label-width="80"
+      :rules="edit_rules"
+    >
+      <el-form-item label="用户名" prop="userName">
         <el-input
           v-model="edit_form.userName"
+          :prefix-icon="UserFilled"
           placeholder="请输入1-20个字符作为你的新用户名"
           clearable
           minlength="1"
@@ -165,7 +183,7 @@
           show-word-limit
         />
       </el-form-item>
-      <el-form-item label="注册时间" :label-width="70">
+      <el-form-item label="注册时间" prop="createTime">
         <el-date-picker
           v-model="edit_form.createTime"
           type="datetime"
@@ -174,14 +192,14 @@
           value-format="YYYY-MM-DD HH:mm:ss"
         />
       </el-form-item>
-      <el-form-item label="上架数" :label-width="70">
+      <el-form-item label="上架数" prop="shelves">
         <el-input
           v-model="edit_form.shelves"
           placeholder="请输入你的新上架数"
           clearable
         />
       </el-form-item>
-      <el-form-item label="售出数" :label-width="70">
+      <el-form-item label="售出数" prop="sold">
         <el-input
           v-model="edit_form.sold"
           placeholder="请输入你的新售出数"
@@ -192,7 +210,7 @@
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="edit_dialog = false">取消</el-button>
-        <el-button type="primary" @click="edit_corfirm"> 确定 </el-button>
+        <el-button type="primary" @click="edit_corfirm">确定</el-button>
       </span>
     </template>
   </el-dialog>
@@ -212,7 +230,7 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref, watch } from "vue"
+import { inject, reactive, ref, watch } from "vue"
 import {
   Search,
   Edit,
@@ -224,8 +242,10 @@ import {
   InfoFilled,
   ShoppingCartFull,
   ShoppingCart,
+  UserFilled,
+  Lock,
 } from "@element-plus/icons-vue"
-import { ElMessage, genFileId } from "element-plus"
+import { ElMessage, FormInstance, FormRules, genFileId } from "element-plus"
 import type { UploadInstance, UploadProps, UploadRawFile } from "element-plus"
 import request from "../utils/request"
 
@@ -246,6 +266,16 @@ interface ServerData {
   total: number
 }
 
+interface RServerResponse {
+  data: RServerData
+}
+
+interface RServerData {
+  code: string
+  data: Array<string>
+  msg: string
+}
+
 const tableData = ref()
 const input_id = ref("")
 const input_userName = ref("")
@@ -263,11 +293,13 @@ const edit_dialog = ref(false)
 const multipleSelection = ref<Userinfor[]>([])
 //FIXME:也许可以简化
 const upload = ref<UploadInstance>()
+const server = (inject("variable") as { server: string }).server
+const server_url = server + "/user/import"
 
 const register_form = reactive({
   userName: "",
   password: "",
-  comfirmPassword: "",
+  confirmPassword: "",
 })
 
 const edit_form = reactive({
@@ -276,6 +308,60 @@ const edit_form = reactive({
   createTime: "",
   shelves: "",
   sold: "",
+})
+
+const ruleFormRef = ref<FormInstance>()
+
+const validatePass = (rule: any, value: any, callback: any) => {
+  if (value === "") {
+    callback(new Error("请输入密码！"))
+  } else {
+    if (register_form.confirmPassword !== "") {
+      if (!ruleFormRef.value) return
+      ruleFormRef.value.validateField("checkPass", () => null)
+    }
+    callback()
+  }
+}
+const validatePass2 = (rule: any, value: any, callback: any) => {
+  if (value === "") {
+    callback(new Error("请再次输入密码！"))
+  } else if (value !== register_form.password) {
+    callback(new Error("两次输入不一致！"))
+  } else {
+    callback()
+  }
+}
+
+const register_rules = reactive<FormRules>({
+  userName: [
+    { required: true, message: "请输入用户名", trigger: "blur" },
+    { min: 1, max: 20, message: "长度应该为1到20位", trigger: "blur" },
+  ],
+  password: [
+    { min: 6, max: 30, message: "长度应该为6到30位", trigger: "blur" },
+    { validator: validatePass, trigger: "blur" },
+  ],
+  confirmPassword: [
+    { min: 6, max: 30, message: "长度应该为6到30位", trigger: "blur" },
+    { validator: validatePass2, trigger: "blur" },
+  ],
+})
+
+const edit_rules = reactive<FormRules>({
+  userName: [
+    { required: true, message: "请输入用户名", trigger: "blur" },
+    { min: 1, max: 20, message: "长度应该为1到20位", trigger: "blur" },
+  ],
+  createTime: [{ required: true, message: "请输入注册时间", trigger: "blur" }],
+  shelves: [
+    { required: true, message: "请输入上架数量", trigger: "blur" },
+    { type: "number", message: "请输入数字", trigger: "blur" },
+  ],
+  sold: [
+    { required: true, message: "请输入售出数量", trigger: "blur" },
+    { type: "number", message: "请输入数字", trigger: "blur" },
+  ],
 })
 
 const clear = () => {
@@ -313,34 +399,31 @@ const load = () => {
 
 load()
 
-const new_crofirm = () => {
-  if (
-    register_form.userName.length >= 1 &&
-    register_form.userName.length <= 20 &&
-    register_form.password.length >= 6 &&
-    register_form.password.length <= 30 &&
-    register_form.password == register_form.comfirmPassword
-  ) {
-    request.post("/user?userName=", register_form).then((res) => {
-      if (res) {
-        {
-          ElMessage({
-            message: "注册成功！",
-            type: "success",
-          })
-          new_dialog.value = false
-          currentPage.value = Math.ceil((total.value + 1) / pageSize.value)
-          load()
-          clear()
-        }
-      }
-    })
-  } else {
-    ElMessage({
-      message: "你输入的用户名密码不符合规范或者两次输入密码不同！",
-      type: "error",
-    })
-  }
+const new_crofirm = async (formEl: FormInstance | undefined) => {
+  if (!formEl) return
+  await formEl.validate((valid) => {
+    if (valid) {
+      request
+        .post<RServerResponse, RServerData>("/user/register", register_form)
+        .then((res) => {
+          if (res.code === "200") {
+            ElMessage({
+              message: "注册成功",
+              type: "success",
+            })
+            new_dialog.value = false
+            currentPage.value = Math.ceil((total.value + 1) / pageSize.value)
+            load()
+            clear()
+          } else {
+            ElMessage({
+              message: res.msg,
+              type: "error",
+            })
+          }
+        })
+    }
+  })
 }
 
 const handleEdit = (row: string) => {
@@ -348,39 +431,33 @@ const handleEdit = (row: string) => {
   edit_dialog.value = true
 }
 
-const edit_corfirm = () => {
-  if (
-    edit_form.userName.length >= 1 &&
-    edit_form.userName.length <= 20 &&
-    edit_form.createTime != null &&
-    edit_form.shelves != null &&
-    edit_form.sold != null &&
-    typeof edit_form.shelves === "number" &&
-    !isNaN(edit_form.shelves) &&
-    typeof edit_form.sold === "number" &&
-    !isNaN(edit_form.sold) &&
-    edit_form.shelves >= edit_form.shelves
-  ) {
-    request.post("/user?userName=", edit_form).then((res) => {
-      if (res) {
-        {
-          ElMessage({
-            message: "修改成功！",
-            type: "success",
-          })
-          edit_dialog.value = false
-          input_id.value = edit_form.id
-          load()
-          clear()
-        }
+const edit_corfirm = async (formEl: FormInstance | undefined) => {
+  if (!formEl) return
+  await formEl.validate((valid) => {
+    if (valid) {
+      {
+        request.post("/user?userName=", edit_form).then((res) => {
+          if (res) {
+            {
+              ElMessage({
+                message: "修改成功！",
+                type: "success",
+              })
+              edit_dialog.value = false
+              input_id.value = edit_form.id
+              load()
+              clear()
+            }
+          }
+        })
       }
-    })
-  } else {
-    ElMessage({
-      message: "输入不符合要求，请检查！",
-      type: "error",
-    })
-  }
+    } else {
+      ElMessage({
+        message: "输入不符合要求，请检查！",
+        type: "error",
+      })
+    }
+  })
 }
 
 const handleDelete = (row: string) => {
@@ -414,8 +491,7 @@ const batchDelete = () => {
 }
 
 const exp = () => {
-  window.open("http://localhost:8080/user/export")
-  //TODO:地址应改为服务器地址
+  window.open(server + "/user/export")
 }
 
 const handleUpSuccess = () => {

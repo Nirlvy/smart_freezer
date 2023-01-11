@@ -8,27 +8,19 @@
       router
       :default-active="curPath"
     >
-      <el-sub-menu index="1">
-        <template #title>
-          <el-icon>
-            <House />
-          </el-icon>
-          <span>&nbsp;&nbsp;页面菜单&nbsp;&nbsp;&nbsp;</span>
-        </template>
-        <el-menu-item index="/home">
-          <el-icon>
-            <Setting />
-          </el-icon>
-          系统首页
-        </el-menu-item>
-      </el-sub-menu>
+      <el-menu-item index="/home">
+        <el-icon>
+          <House />
+        </el-icon>
+        <span>系统首页</span>
+      </el-menu-item>
 
       <el-sub-menu index="2">
         <template #title>
           <el-icon>
             <Box />
           </el-icon>
-          <span>&nbsp;&nbsp;管理菜单</span>
+          <span>管理菜单</span>
         </template>
         <el-menu-item index="2-1">
           <el-icon>
@@ -55,7 +47,7 @@
           <el-icon>
             <Tickets />
           </el-icon>
-          <span>&nbsp;&nbsp;记录菜单</span>
+          <span>记录菜单</span>
         </template>
         <el-menu-item index="/user">
           <el-icon>
@@ -85,22 +77,18 @@ import {
   Present,
   Box,
   Tickets,
-  Setting,
   Fold,
   Files,
   DataAnalysis,
 } from "@element-plus/icons-vue"
-import { onBeforeRouteUpdate, useRoute, useRouter } from "vue-router"
+import { onBeforeRouteUpdate, useRoute } from "vue-router"
 
 const isCollapse = ref(false)
 const route = useRoute()
-const router = useRouter()
 const curPath = ref(route.fullPath)
-const menuList = ref(router.options.routes[0].children)
 
 const toggleCollapse = () => {
   isCollapse.value = !isCollapse.value
-  console.log(menuList)
 }
 onBeforeRouteUpdate((to) => {
   curPath.value = to.path
@@ -110,5 +98,10 @@ onBeforeRouteUpdate((to) => {
 <style scoped>
 .layout-container .el-menu {
   border-right: none;
+}
+
+span {
+  padding-left: 10px;
+  padding-right: 20px;
 }
 </style>
