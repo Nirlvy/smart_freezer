@@ -293,7 +293,7 @@ const edit_dialog = ref(false)
 const multipleSelection = ref<Userinfor[]>([])
 const upload = ref<UploadInstance>()
 const server = (inject("variable") as { server: string }).server
-const server_url = server + "/user/import"
+const server_url = ref(server + "/user/import")
 
 const register_form = reactive({
   userName: "",
