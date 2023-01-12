@@ -52,4 +52,8 @@ import Header from "../components/Header.vue"
   margin: 0;
   padding: 0;
 }
+
+body {
+  background-color: white;
+}
 </style>

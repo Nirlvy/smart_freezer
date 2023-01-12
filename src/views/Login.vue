@@ -136,6 +136,8 @@ const login = async (formEl: FormInstance | undefined) => {
   background-position-x: center;
   background-position-y: center;
   background-size: cover;
+  will-change: filter;
+  filter: blur(0px);
   transition: filter 0.3s ease-in-out;
 }
 .wrapper-overlay.focus {
@@ -151,6 +153,8 @@ const login = async (formEl: FormInstance | undefined) => {
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  will-change: scale, opacity;
+  scale: (1);
   opacity: 0.2;
   transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
 }
