@@ -13,7 +13,7 @@
 
       <el-container style="width: 100%">
         <el-main>
-          <RouterView />
+          <router-view />
         </el-main>
       </el-container>
     </el-container>
@@ -21,8 +21,8 @@
 </template>
 
 <script lang="ts" setup>
-import Aside from "../components/Aside.vue"
-import Header from "../components/Header.vue"
+import Aside from "./Aside.vue"
+import Header from "./Header.vue"
 </script>
 
 <style scoped>

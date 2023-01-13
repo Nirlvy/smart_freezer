@@ -8,7 +8,7 @@
       router
       :default-active="curPath"
     >
-      <el-menu-item index="/home">
+      <el-menu-item index="/manage/home">
         <el-icon>
           <House />
         </el-icon>
@@ -49,7 +49,7 @@
           </el-icon>
           <span>记录菜单</span>
         </template>
-        <el-menu-item index="/user">
+        <el-menu-item index="/manage/user">
           <el-icon>
             <DataAnalysis />
           </el-icon>

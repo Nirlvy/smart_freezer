@@ -6,7 +6,21 @@ export const router = createRouter({
     {
       path: "/",
       redirect: "/login",
-      component: () => import("../views/Manage.vue"),
+      component: () => import("../components/Login_bg.vue"),
+      children: [
+        {
+          path: "/login",
+          component: () => import("../views/Login.vue"),
+        },
+        {
+          path: "/register",
+          component: () => import("../views/Register.vue"),
+        },
+      ],
+    },
+    {
+      path: "/manage",
+      component: () => import("../components/Manage.vue"),
       children: [
         {
           path: "user",
@@ -23,14 +37,6 @@ export const router = createRouter({
           component: () => import("../views/Person.vue"),
         },
       ],
-    },
-    {
-      path: "/login",
-      component: () => import("../views/Login.vue"),
-    },
-    {
-      path: "/register",
-      component: () => import("../views/Register.vue"),
     },
   ],
 })

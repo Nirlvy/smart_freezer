@@ -1,80 +1,77 @@
 <template>
-  <div class="wrapper">
-    <div class="wrapper-overlay" :class="{ focus: blur }" />
-    <div
-      class="windows"
-      :class="{ focus: blur }"
-      @mouseenter="blur = true"
-      @mouseleave="blur = false"
-    >
-      <div style="margin: 20px 0; text-align: center; font-size: 24px">
-        <b>注册</b>
-      </div>
-      <el-form :model="user" :rules="rules" ref="ruleFormRef" status-icon>
-        <el-form-item prop="userName">
-          <el-input
-            size="large"
-            style="margin: 10px 0"
-            :prefix-icon="UserFilled"
-            v-model="user.userName"
-            placeholder="请输入1-20个字符作为你的用户名"
-            clearable
-            minlength="1"
-            maxlength="20"
-            show-word-limit
-          />
-        </el-form-item>
-        <el-form-item prop="password">
-          <el-input
-            size="large"
-            style="margin: 10px 0"
-            :prefix-icon="Lock"
-            show-password
-            v-model="user.password"
-            placeholder="请输入6-30个字符作为你的密码"
-            clearable
-            minlength="6"
-            maxlength="30"
-          />
-        </el-form-item>
-        <el-form-item prop="confirm_password">
-          <el-input
-            size="large"
-            style="margin: 10px 0"
-            :prefix-icon="Lock"
-            show-password
-            v-model="user.confirm_password"
-            placeholder="请重复输入一次你的密码"
-            clearable
-            minlength="6"
-            maxlength="30"
-          />
-        </el-form-item>
-        <el-form-item class="el-form-button">
-          <el-button
-            type="primary"
-            size="large"
-            round
-            @click="register(ruleFormRef)"
-          >
-            注册
-          </el-button>
-          <el-button
-            type="success"
-            size="large"
-            round
-            @click="router.push('/login')"
-          >
-            返回
-          </el-button>
-        </el-form-item>
-      </el-form>
+  <div
+    class="windows"
+    :class="{ focus: blur }"
+    @mouseenter="blur = true"
+    @mouseleave="blur = false"
+  >
+    <div style="margin: 20px 0; text-align: center; font-size: 24px">
+      <b>注册</b>
     </div>
+    <el-form :model="user" :rules="rules" ref="ruleFormRef" status-icon>
+      <el-form-item prop="userName">
+        <el-input
+          size="large"
+          style="margin: 10px 0"
+          :prefix-icon="UserFilled"
+          v-model="user.userName"
+          placeholder="请输入1-20个字符作为你的用户名"
+          clearable
+          minlength="1"
+          maxlength="20"
+          show-word-limit
+        />
+      </el-form-item>
+      <el-form-item prop="password">
+        <el-input
+          size="large"
+          style="margin: 10px 0"
+          :prefix-icon="Lock"
+          show-password
+          v-model="user.password"
+          placeholder="请输入6-30个字符作为你的密码"
+          clearable
+          minlength="6"
+          maxlength="30"
+        />
+      </el-form-item>
+      <el-form-item prop="confirm_password">
+        <el-input
+          size="large"
+          style="margin: 10px 0"
+          :prefix-icon="Lock"
+          show-password
+          v-model="user.confirm_password"
+          placeholder="请重复输入一次你的密码"
+          clearable
+          minlength="6"
+          maxlength="30"
+        />
+      </el-form-item>
+      <el-form-item class="el-form-button">
+        <el-button
+          type="primary"
+          size="large"
+          round
+          @click="register(ruleFormRef)"
+        >
+          注册
+        </el-button>
+        <el-button
+          type="success"
+          size="large"
+          round
+          @click="router.push('/login')"
+        >
+          返回
+        </el-button>
+      </el-form-item>
+    </el-form>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref } from "vue"
+import { inject, reactive, ref } from "vue"
 import { Lock, UserFilled } from "@element-plus/icons-vue"
 import request from "../utils/request"
 import { ElMessage, FormInstance, FormRules } from "element-plus"
@@ -95,7 +92,7 @@ const user = reactive({
   password: "",
   confirm_password: "",
 })
-const blur = ref(false)
+const blur = inject("blur")
 const router = useRouter()
 
 const ruleFormRef = ref<FormInstance>()
@@ -149,7 +146,7 @@ const register = async (formEl: FormInstance | undefined) => {
               type: "success",
             })
             localStorage.setItem("user", JSON.stringify(res.data))
-            router.push("/home")
+            router.push("/manage/home")
           } else {
             ElMessage({
               message: res.msg,
@@ -163,28 +160,6 @@ const register = async (formEl: FormInstance | undefined) => {
 </script>
 
 <style scoped>
-.wrapper {
-  position: relative;
-  height: 100vh;
-  overflow: hidden;
-}
-.wrapper-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  /* background-image: linear-gradient(to bottom right, #fc466b, #3f5efb); */
-  background-image: url(../assets/Cupoi吃咖喱的poi_Cupoi吃咖喱的poi_林中小屋_98928714_p0.jpg);
-  background-repeat: no-repeat;
-  background-position-x: center;
-  background-position-y: center;
-  background-size: cover;
-  transition: filter 0.3s ease-in-out;
-}
-.wrapper-overlay.focus {
-  filter: blur(20px);
-}
 .windows {
   position: relative;
   z-index: 1;
@@ -194,7 +169,6 @@ const register = async (formEl: FormInstance | undefined) => {
   height: 400px;
   padding: 20px;
   border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   opacity: 0.2;
   transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
 }

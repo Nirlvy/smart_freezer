@@ -4,7 +4,7 @@
       <span style="font-size: large">智能冰柜管理系统</span>
       <el-breadcrumb
         style="display: inline-block; margin-left: 20px; font-size: 16px"
-        ><el-breadcrumb-item class="breadcrumb" :to="{ path: '/home' }"
+        ><el-breadcrumb-item class="breadcrumb" :to="{ path: '/manage/home' }"
           >首页</el-breadcrumb-item
         ><template v-for="(item, index) in breadList"
           ><el-breadcrumb-item v-if="item.name" :key="index" :to="item.path">{{
@@ -13,15 +13,15 @@
         ></el-breadcrumb
       >
     </div>
-    <div>
-      <el-dropdown style="width: 30px float: right;">
-        <el-icon style="margin-right: 8px; margin-top: 1px" :size="20">
+    <div style="display: flex">
+      <el-dropdown style="width: 30px float: right">
+        <el-icon style="margin-right: 8px; margin-top: 1px" :size="25">
           <setting />
         </el-icon>
 
         <template #dropdown>
           <el-dropdown-menu>
-            <router-link to="/person" style="text-decoration: none"
+            <router-link to="/manage/person" style="text-decoration: none"
               ><el-dropdown-item>个人中心</el-dropdown-item></router-link
             >
             <span @click="logout">
@@ -30,7 +30,10 @@
           </el-dropdown-menu>
         </template>
       </el-dropdown>
-      <span style="margin-right: 20px">{{ user.userName }}</span>
+      <img class="avatar" :src="user.img" />
+      <span style="margin-right: 20px; line-height: 30px">{{
+        user.userName
+      }}</span>
     </div>
   </div>
 </template>
@@ -77,5 +80,12 @@ const logout = () => {
 
 .breadcrumb:hover :deep() .el-breadcrumb__inner {
   color: #388ae6;
+}
+
+.avatar {
+  margin-right: 10px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
 }
 </style>

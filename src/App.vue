@@ -5,7 +5,7 @@
 <template>
   <main>
     <!-- <TheWelcome /> -->
-    <RouterView />
+    <router-view />
   </main>
 </template>
 

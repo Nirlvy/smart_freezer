@@ -7,6 +7,16 @@
     status-icon
     style="margin: 30px; width: 600px"
   >
+    <el-upload
+      class="avatar-uploader"
+      action="http://localhost:8080/file/upload"
+      :show-file-list="false"
+      :on-success="handleAvatarSuccess"
+      :before-upload="beforeAvatarUpload"
+    >
+      <img v-if="user.img" :src="user.img" class="avatar" />
+      <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
+    </el-upload>
     <el-form-item prop="userName" label="用户名">
       <el-input
         :prefix-icon="UserFilled"
@@ -92,6 +102,7 @@ import {
   ShoppingCart,
   ShoppingCartFull,
   UserFilled,
+  Plus,
 } from "@element-plus/icons-vue"
 import {
   FormRules,
@@ -101,6 +112,7 @@ import {
   ElFormItem,
   ElInput,
   ElButton,
+  UploadProps,
 } from "element-plus"
 import { reactive, ref } from "vue"
 import { useRouter } from "vue-router"
@@ -137,6 +149,7 @@ const user = reactive({
   createTime: "",
   shelves: "",
   sold: "",
+  img: "",
 })
 
 const load = () => {
@@ -210,11 +223,72 @@ const confirm = async (formEl: FormInstance | undefined) => {
     }
   })
 }
+
+const handleAvatarSuccess: UploadProps["onSuccess"] = (response) => {
+  user.img = response
+  let newuserinfo = JSON.parse(localStorage.getItem("user") || "0")
+  newuserinfo.img = response
+  newuserinfo.userName = user.userName
+  localStorage.setItem("user", JSON.stringify(newuserinfo))
+  request.post<ServerResponse, ServerData>("/user", user).then((res) => {
+    if (res) {
+      ElMessage.success("修改成功")
+    } else {
+      ElMessage.error("修改失败")
+    }
+  })
+  setTimeout(location.reload(), 2000)
+}
+
+const beforeAvatarUpload: UploadProps["beforeUpload"] = (rawFile) => {
+  if (rawFile.type !== "image/jpeg" && rawFile.type !== "image/png") {
+    ElMessage.error("头像必须为 JPG 或者 PNG 格式!")
+    return false
+  } else if (rawFile.size / 1024 / 1024 > 2) {
+    ElMessage.error("头像不能大于2MB!")
+    return false
+  }
+  return true
+}
 </script>
 
 <style scoped>
 .el-form-button :deep() .el-form-item__content {
   text-align: right;
   display: block;
+}
+
+.avatar-uploader {
+  text-align: center;
+  padding: 20px;
+}
+
+.avatar-uploader .avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
+}
+</style>
+
+<style>
+.avatar-uploader .el-upload {
+  border: 1px dashed var(--el-border-color);
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: var(--el-transition-duration-fast);
+}
+
+.avatar-uploader .el-upload:hover {
+  border-color: var(--el-color-primary);
+}
+
+.el-icon.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  text-align: center;
 }
 </style>
