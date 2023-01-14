@@ -237,7 +237,9 @@ const handleAvatarSuccess: UploadProps["onSuccess"] = (response) => {
       ElMessage.error("修改失败")
     }
   })
-  setTimeout(location.reload(), 2000)
+  setTimeout(() => {
+    location.reload()
+  }, 2000)
 }
 
 const beforeAvatarUpload: UploadProps["beforeUpload"] = (rawFile) => {
